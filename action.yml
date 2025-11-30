@@ -1,0 +1,25 @@
+name: Update VPM Repository
+description: 
+inputs:
+  path:
+    description: Path to repository manifest file.
+    type: string
+    required: true
+  package:
+    description: Path to package manifest file (`package.json`).
+    type: string
+    required: true
+  on-conflict:
+    description: ''
+    required: true
+    type: choice
+    options:
+      - ovrewrite
+      - abort
+      - no-change
+outputs:
+  updated:
+    description: ''
+runs:
+  using: node24
+  main: dist/index.js

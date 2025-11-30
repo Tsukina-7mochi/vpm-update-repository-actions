@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "@actions/core": "npm:@actions/core@^1.11.1",
+    "valibot": "jsr:@valibot/valibot@^1.1.0"
+  }
+}
