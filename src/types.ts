@@ -3,7 +3,7 @@ import * as v from "valibot";
 export const InputSchema = v.object({
   path: v.string(),
   package: v.string(),
-  onConclict: v.picklist(["ovrewrite", "abort", "no-change"] as const),
+  onConflict: v.picklist(["ovrewrite", "abort", "no-change"] as const),
 });
 export type InputType = v.InferOutput<typeof InputSchema>;
 
