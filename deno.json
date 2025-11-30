@@ -1,6 +1,11 @@
 {
+  "tasks": {
+    "build": "deno -RWE --allow-run build.ts"
+  },
   "imports": {
     "@actions/core": "npm:@actions/core@^1.11.1",
+    "@deno/esbuild-plugin": "jsr:@deno/esbuild-plugin@^1.2.0",
+    "esbuild": "npm:esbuild@^0.27.0",
     "valibot": "jsr:@valibot/valibot@^1.1.0"
   }
 }
