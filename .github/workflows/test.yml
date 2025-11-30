@@ -1,0 +1,343 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-add-new-package:
+    name: Add new package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup test fixtures
+        run: |
+          mkdir -p test/tmp
+          cat > test/tmp/repo.json << 'EOF'
+          {
+            "name": "Test Repository",
+            "author": "Test Author",
+            "id": "com.test.repo",
+            "url": "https://example.com/repo.json",
+            "packages": {}
+          }
+          EOF
+          cat > test/tmp/package.json << 'EOF'
+          {
+            "name": "com.test.package",
+            "version": "1.0.0",
+            "displayName": "Test Package",
+            "description": "A test package"
+          }
+          EOF
+
+      - name: Run action
+        id: update
+        uses: ./
+        with:
+          path: test/tmp/repo.json
+          package: test/tmp/package.json
+          on-conflict: abort
+
+      - name: Verify output
+        run: |
+          if [ "${{ steps.update.outputs.updated }}" != "true" ]; then
+            echo "Expected updated=true"
+            exit 1
+          fi
+
+      - name: Verify repository updated
+        run: |
+          if ! jq -e '.packages["com.test.package"].versions["1.0.0"]' test/tmp/repo.json > /dev/null; then
+            echo "Package was not added to repository"
+            cat test/tmp/repo.json
+            exit 1
+          fi
+
+  test-add-new-version:
+    name: Add new version to existing package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup test fixtures
+        run: |
+          mkdir -p test/tmp
+          cat > test/tmp/repo.json << 'EOF'
+          {
+            "name": "Test Repository",
+            "author": "Test Author",
+            "id": "com.test.repo",
+            "url": "https://example.com/repo.json",
+            "packages": {
+              "com.test.package": {
+                "versions": {
+                  "1.0.0": {
+                    "name": "com.test.package",
+                    "version": "1.0.0",
+                    "displayName": "Test Package"
+                  }
+                }
+              }
+            }
+          }
+          EOF
+          cat > test/tmp/package.json << 'EOF'
+          {
+            "name": "com.test.package",
+            "version": "1.1.0",
+            "displayName": "Test Package",
+            "description": "Updated description"
+          }
+          EOF
+
+      - name: Run action
+        id: update
+        uses: ./
+        with:
+          path: test/tmp/repo.json
+          package: test/tmp/package.json
+          on-conflict: abort
+
+      - name: Verify output
+        run: |
+          if [ "${{ steps.update.outputs.updated }}" != "true" ]; then
+            echo "Expected updated=true"
+            exit 1
+          fi
+
+      - name: Verify both versions exist
+        run: |
+          if ! jq -e '.packages["com.test.package"].versions["1.0.0"]' test/tmp/repo.json > /dev/null; then
+            echo "Original version 1.0.0 is missing"
+            exit 1
+          fi
+          if ! jq -e '.packages["com.test.package"].versions["1.1.0"]' test/tmp/repo.json > /dev/null; then
+            echo "New version 1.1.0 was not added"
+            exit 1
+          fi
+
+  test-no-conflict-same-content:
+    name: Version exists with identical content (no conflict)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup test fixtures
+        run: |
+          mkdir -p test/tmp
+          cat > test/tmp/repo.json << 'EOF'
+          {
+            "name": "Test Repository",
+            "author": "Test Author",
+            "id": "com.test.repo",
+            "url": "https://example.com/repo.json",
+            "packages": {
+              "com.test.package": {
+                "versions": {
+                  "1.0.0": {
+                    "name": "com.test.package",
+                    "version": "1.0.0",
+                    "displayName": "Test Package"
+                  }
+                }
+              }
+            }
+          }
+          EOF
+          cat > test/tmp/package.json << 'EOF'
+          {
+            "name": "com.test.package",
+            "version": "1.0.0",
+            "displayName": "Test Package"
+          }
+          EOF
+
+      - name: Run action
+        id: update
+        uses: ./
+        with:
+          path: test/tmp/repo.json
+          package: test/tmp/package.json
+          on-conflict: abort
+
+      - name: Verify output
+        run: |
+          if [ "${{ steps.update.outputs.updated }}" != "true" ]; then
+            echo "Expected updated=true"
+            exit 1
+          fi
+
+  test-conflict-overwrite:
+    name: Conflict with on-conflict=overwrite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup test fixtures
+        run: |
+          mkdir -p test/tmp
+          cat > test/tmp/repo.json << 'EOF'
+          {
+            "name": "Test Repository",
+            "author": "Test Author",
+            "id": "com.test.repo",
+            "url": "https://example.com/repo.json",
+            "packages": {
+              "com.test.package": {
+                "versions": {
+                  "1.0.0": {
+                    "name": "com.test.package",
+                    "version": "1.0.0",
+                    "displayName": "Old Name"
+                  }
+                }
+              }
+            }
+          }
+          EOF
+          cat > test/tmp/package.json << 'EOF'
+          {
+            "name": "com.test.package",
+            "version": "1.0.0",
+            "displayName": "New Name"
+          }
+          EOF
+
+      - name: Run action
+        id: update
+        uses: ./
+        with:
+          path: test/tmp/repo.json
+          package: test/tmp/package.json
+          on-conflict: ovrewrite
+
+      - name: Verify output
+        run: |
+          if [ "${{ steps.update.outputs.updated }}" != "true" ]; then
+            echo "Expected updated=true"
+            exit 1
+          fi
+
+      - name: Verify content was overwritten
+        run: |
+          display_name=$(jq -r '.packages["com.test.package"].versions["1.0.0"].displayName' test/tmp/repo.json)
+          if [ "$display_name" != "New Name" ]; then
+            echo "Expected displayName to be 'New Name', got '$display_name'"
+            exit 1
+          fi
+
+  test-conflict-abort:
+    name: Conflict with on-conflict=abort
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup test fixtures
+        run: |
+          mkdir -p test/tmp
+          cat > test/tmp/repo.json << 'EOF'
+          {
+            "name": "Test Repository",
+            "author": "Test Author",
+            "id": "com.test.repo",
+            "url": "https://example.com/repo.json",
+            "packages": {
+              "com.test.package": {
+                "versions": {
+                  "1.0.0": {
+                    "name": "com.test.package",
+                    "version": "1.0.0",
+                    "displayName": "Old Name"
+                  }
+                }
+              }
+            }
+          }
+          EOF
+          cat > test/tmp/package.json << 'EOF'
+          {
+            "name": "com.test.package",
+            "version": "1.0.0",
+            "displayName": "New Name"
+          }
+          EOF
+
+      - name: Run action (should fail)
+        id: update
+        uses: ./
+        with:
+          path: test/tmp/repo.json
+          package: test/tmp/package.json
+          on-conflict: abort
+        continue-on-error: true
+
+      - name: Verify action failed
+        run: |
+          if [ "${{ steps.update.outcome }}" != "failure" ]; then
+            echo "Expected action to fail on conflict with abort"
+            exit 1
+          fi
+
+  test-conflict-no-change:
+    name: Conflict with on-conflict=no-change
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup test fixtures
+        run: |
+          mkdir -p test/tmp
+          cat > test/tmp/repo.json << 'EOF'
+          {
+            "name": "Test Repository",
+            "author": "Test Author",
+            "id": "com.test.repo",
+            "url": "https://example.com/repo.json",
+            "packages": {
+              "com.test.package": {
+                "versions": {
+                  "1.0.0": {
+                    "name": "com.test.package",
+                    "version": "1.0.0",
+                    "displayName": "Old Name"
+                  }
+                }
+              }
+            }
+          }
+          EOF
+          cat > test/tmp/package.json << 'EOF'
+          {
+            "name": "com.test.package",
+            "version": "1.0.0",
+            "displayName": "New Name"
+          }
+          EOF
+          cp test/tmp/repo.json test/tmp/repo-original.json
+
+      - name: Run action
+        id: update
+        uses: ./
+        with:
+          path: test/tmp/repo.json
+          package: test/tmp/package.json
+          on-conflict: no-change
+
+      - name: Verify output
+        run: |
+          if [ "${{ steps.update.outputs.updated }}" != "false" ]; then
+            echo "Expected updated=false"
+            exit 1
+          fi
+
+      - name: Verify content was not changed
+        run: |
+          display_name=$(jq -r '.packages["com.test.package"].versions["1.0.0"].displayName' test/tmp/repo.json)
+          if [ "$display_name" != "Old Name" ]; then
+            echo "Expected displayName to remain 'Old Name', got '$display_name'"
+            exit 1
+          fi
