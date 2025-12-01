@@ -30,7 +30,13 @@ jobs:
             "name": "com.test.package",
             "version": "1.0.0",
             "displayName": "Test Package",
-            "description": "A test package"
+            "description": "A test package",
+            "url": "https://example.com/packages/com.test.package-1.0.0.zip",
+            "vpmDependencies": {},
+            "author": {
+              "name": "Test Author",
+              "email": "test@example.com"
+            }
           }
           EOF
 
@@ -78,7 +84,13 @@ jobs:
                   "1.0.0": {
                     "name": "com.test.package",
                     "version": "1.0.0",
-                    "displayName": "Test Package"
+                    "displayName": "Test Package",
+                    "url": "https://example.com/packages/com.test.package-1.0.0.zip",
+                    "vpmDependencies": {},
+                    "author": {
+                      "name": "Test Author",
+                      "email": "test@example.com"
+                    }
                   }
                 }
               }
@@ -90,7 +102,13 @@ jobs:
             "name": "com.test.package",
             "version": "1.1.0",
             "displayName": "Test Package",
-            "description": "Updated description"
+            "description": "Updated description",
+            "url": "https://example.com/packages/com.test.package-1.1.0.zip",
+            "vpmDependencies": {},
+            "author": {
+              "name": "Test Author",
+              "email": "test@example.com"
+            }
           }
           EOF
 
@@ -141,7 +159,13 @@ jobs:
                   "1.0.0": {
                     "name": "com.test.package",
                     "version": "1.0.0",
-                    "displayName": "Test Package"
+                    "displayName": "Test Package",
+                    "url": "https://example.com/packages/com.test.package-1.0.0.zip",
+                    "vpmDependencies": {},
+                    "author": {
+                      "name": "Test Author",
+                      "email": "test@example.com"
+                    }
                   }
                 }
               }
@@ -152,7 +176,13 @@ jobs:
           {
             "name": "com.test.package",
             "version": "1.0.0",
-            "displayName": "Test Package"
+            "displayName": "Test Package",
+            "url": "https://example.com/packages/com.test.package-1.0.0.zip",
+            "vpmDependencies": {},
+            "author": {
+              "name": "Test Author",
+              "email": "test@example.com"
+            }
           }
           EOF
 
@@ -192,7 +222,13 @@ jobs:
                   "1.0.0": {
                     "name": "com.test.package",
                     "version": "1.0.0",
-                    "displayName": "Old Name"
+                    "displayName": "Old Name",
+                    "url": "https://example.com/packages/com.test.package-1.0.0.zip",
+                    "vpmDependencies": {},
+                    "author": {
+                      "name": "Test Author",
+                      "email": "test@example.com"
+                    }
                   }
                 }
               }
@@ -203,7 +239,13 @@ jobs:
           {
             "name": "com.test.package",
             "version": "1.0.0",
-            "displayName": "New Name"
+            "displayName": "New Name",
+            "url": "https://example.com/packages/com.test.package-1.0.0.zip",
+            "vpmDependencies": {},
+            "author": {
+              "name": "Test Author",
+              "email": "test@example.com"
+            }
           }
           EOF
 
@@ -251,7 +293,13 @@ jobs:
                   "1.0.0": {
                     "name": "com.test.package",
                     "version": "1.0.0",
-                    "displayName": "Old Name"
+                    "displayName": "Old Name",
+                    "url": "https://example.com/packages/com.test.package-1.0.0.zip",
+                    "vpmDependencies": {},
+                    "author": {
+                      "name": "Test Author",
+                      "email": "test@example.com"
+                    }
                   }
                 }
               }
@@ -262,7 +310,13 @@ jobs:
           {
             "name": "com.test.package",
             "version": "1.0.0",
-            "displayName": "New Name"
+            "displayName": "New Name",
+            "url": "https://example.com/packages/com.test.package-1.0.0.zip",
+            "vpmDependencies": {},
+            "author": {
+              "name": "Test Author",
+              "email": "test@example.com"
+            }
           }
           EOF
 
@@ -303,7 +357,13 @@ jobs:
                   "1.0.0": {
                     "name": "com.test.package",
                     "version": "1.0.0",
-                    "displayName": "Old Name"
+                    "displayName": "Old Name",
+                    "url": "https://example.com/packages/com.test.package-1.0.0.zip",
+                    "vpmDependencies": {},
+                    "author": {
+                      "name": "Test Author",
+                      "email": "test@example.com"
+                    }
                   }
                 }
               }
@@ -314,7 +374,13 @@ jobs:
           {
             "name": "com.test.package",
             "version": "1.0.0",
-            "displayName": "New Name"
+            "displayName": "New Name",
+            "url": "https://example.com/packages/com.test.package-1.0.0.zip",
+            "vpmDependencies": {},
+            "author": {
+              "name": "Test Author",
+              "email": "test@example.com"
+            }
           }
           EOF
           cp test/tmp/repo.json test/tmp/repo-original.json
