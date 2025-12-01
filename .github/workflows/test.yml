@@ -196,8 +196,8 @@ jobs:
 
       - name: Verify output
         run: |
-          if [ "${{ steps.update.outputs.updated }}" != "true" ]; then
-            echo "Expected updated=true"
+          if [ "${{ steps.update.outputs.updated }}" != "false" ]; then
+            echo "Expected updated=false"
             exit 1
           fi
 
