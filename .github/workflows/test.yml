@@ -255,7 +255,7 @@ jobs:
         with:
           path: test/tmp/repo.json
           package: test/tmp/package.json
-          on-conflict: ovrewrite
+          on-conflict: overwrite
 
       - name: Verify output
         run: |

@@ -14,7 +14,7 @@ inputs:
     required: true
     type: choice
     options:
-      - ovrewrite
+      - overwrite
       - abort
       - no-change
 outputs:

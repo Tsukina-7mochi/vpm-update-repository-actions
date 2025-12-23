@@ -52,6 +52,11 @@ export async function updateRepository(input: InputType): Promise<OutputType> {
       // deno-fmt-ignore
       core.info(`Conflict detected, no changes made for package: ${pkg.name} ${pkg.version}`);
       return { updated: false };
+    } else if (input.onConflict === "overwrite") {
+      // deno-fmt-ignore
+      core.info(`Conflict detected, overwriting package: ${pkg.name} ${pkg.version}`);
+    } else {
+      const _: never = input.onConflict;
     }
   }
 
