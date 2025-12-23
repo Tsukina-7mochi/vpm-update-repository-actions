@@ -1,5 +1,6 @@
 import * as fs from "node:fs/promises";
 import * as v from "valibot";
+import * as core from "@actions/core";
 
 import {
   InputType,
@@ -29,23 +30,27 @@ export async function updateRepository(input: InputType): Promise<OutputType> {
   );
 
   if (!(pkg.name in repo.packages)) {
+    core.info(`Creating new package entry: ${pkg.name} ${pkg.version}`);
     repo.packages[pkg.name] = {
       versions: {
         [pkg.version]: pkg,
       },
     };
   } else if (!(pkg.version in repo.packages[pkg.name].versions)) {
+    core.info(`Adding new version to package: ${pkg.name} ${pkg.version}`);
     repo.packages[pkg.name].versions[pkg.version] = pkg;
   } else {
     const existing = repo.packages[pkg.name].versions[pkg.version];
     if (JSON.stringify(existing) === JSON.stringify(pkg)) {
-      console.log("no change");
+      // deno-fmt-ignore
+      core.info(`Package version is identical, no update needed: ${pkg.name} ${pkg.version}`);
       return { updated: false };
     } else if (input.onConflict === "abort") {
-      console.log("abort");
+      core.info(`Conflict detected for package: ${pkg.name} ${pkg.version}`);
       throw new ConflictError();
     } else if (input.onConflict === "no-change") {
-      console.log("ignore change");
+      // deno-fmt-ignore
+      core.info(`Conflict detected, no changes made for package: ${pkg.name} ${pkg.version}`);
       return { updated: false };
     }
   }
