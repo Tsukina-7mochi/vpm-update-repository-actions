@@ -1,0 +1,11 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: Lint
+      run: deno lint
+
+    - name: Check format
+      run: deno fmt --check
+
+    - name: Ensure build
+      run: deno task build && test -z "$(git diff)"
